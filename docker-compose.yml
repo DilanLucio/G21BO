@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  n8n:
+    image: n8nio/n8n
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=tu-instancia.com
+      - GENERIC_TIMEZONE=America/Mexico_City
+      - TZ=America/Mexico_City
+    volumes:
+      # Usamos tu carpeta existente de n8n para no perder nada
+      - /home/ubuntu/.n8n:/home/node/.n8n
+      # Montamos las llaves SSH para que n8n pueda conectarse a GitHub
+      - /home/ubuntu/.ssh:/home/node/.ssh:ro
+    user: "1000:1000" # Importante para permisos de escritura en n8n
+
+  python-app:
+    build: ./pdf-analyzer
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      # Montamos el código para editar en vivo si es necesario
+      - ./pdf-analyzer:/app
